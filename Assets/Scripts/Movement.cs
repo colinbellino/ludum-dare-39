@@ -5,19 +5,21 @@ using UnityEngine;
 namespace LD39 {
 	public class Movement : MonoBehaviour {
 
-		[SerializeField]
 		int moveCost = 1;
-
+		bool canMove = true;
 		GridManager gridManager;
 		ChargeUser chargeUser;
 
 		void Awake() {
 			Init();
-			InputManager.OnMove += Move;
+
+			InputManager.OnMove += OnMove;
+			UI.TitleScreen.OnVisibilityChanged += OnVisibilityChanged;
 		}
 
 		void OnDestroy() {
-			InputManager.OnMove -= Move;
+			InputManager.OnMove -= OnMove;
+			UI.TitleScreen.OnVisibilityChanged -= OnVisibilityChanged;
 		}
 
 		void Init() {
@@ -35,7 +37,9 @@ namespace LD39 {
 			chargeUser = GetComponent<ChargeUser>();
 		}
 
-		void Move(Direction direction) {
+		void OnMove(Direction direction) {
+			if (!canMove) { return; }
+
 			var wasAbleToMove = gridManager.MoveInDirection(gameObject, direction);
 
 			if (wasAbleToMove) {
@@ -44,6 +48,10 @@ namespace LD39 {
 					chargeUser.Consume(moveCost);
 				}
 			}
+		}
+
+		void OnVisibilityChanged(bool isVisible) {
+			canMove = !isVisible;
 		}
 	}
 }

@@ -112,9 +112,9 @@ NavMeshSettings:
 --- !u!1 &1199100796
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 1098160376424330, guid: 852e0e0a574b348bcb7d99813563a02a,
+  m_PrefabParentObject: {fileID: 1677904799035480, guid: cb7c41d9791e040db9cdb551b929a2ce,
     type: 2}
-  m_PrefabInternal: {fileID: 1934081156}
+  m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1199100799}
@@ -129,9 +129,9 @@ GameObject:
 --- !u!114 &1199100798
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
+  m_PrefabParentObject: {fileID: 114894101614629164, guid: cb7c41d9791e040db9cdb551b929a2ce,
     type: 2}
-  m_PrefabInternal: {fileID: 1934081156}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1199100796}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -140,18 +140,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blueprint:
   - rows:
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
   - rows:
-    - r
     - 
     - 
     - 
@@ -160,9 +159,10 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
+    - 
   - rows:
-    - r
+    - 
     - 
     - p
     - 
@@ -171,9 +171,8 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
   - rows:
-    - r
     - 
     - 
     - 
@@ -182,9 +181,9 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
+    - 
   - rows:
-    - r
     - 
     - 
     - 
@@ -193,9 +192,9 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
+    - 
   - rows:
-    - r
     - 
     - 
     - 
@@ -204,9 +203,9 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
+    - 
   - rows:
-    - r
     - 
     - 
     - 
@@ -215,9 +214,10 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
+    - 
   - rows:
-    - r
+    - 
     - 
     - 
     - 
@@ -226,9 +226,8 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
   - rows:
-    - r
     - 
     - 
     - 
@@ -237,18 +236,19 @@ MonoBehaviour:
     - 
     - 
     - 
-    - r
+    - 
+    - 
   - rows:
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
-    - r
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
   grid: []
   charges: 3
   cellObject: {fileID: 1996768519295132, guid: c49fd808d4dd94abb8eabd16a774ff30, type: 2}
@@ -257,9 +257,9 @@ MonoBehaviour:
 --- !u!4 &1199100799
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a,
+  m_PrefabParentObject: {fileID: 4073515182652418, guid: cb7c41d9791e040db9cdb551b929a2ce,
     type: 2}
-  m_PrefabInternal: {fileID: 1934081156}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1199100796}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -268,75 +268,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1934081156
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.size
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.data[0].rows.Array.size
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.data[0].rows.Array.data[1]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: chargeForGrid
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: charges
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.data[0].rows.Array.data[4]
-      value: 
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-  m_IsPrefabParent: 0

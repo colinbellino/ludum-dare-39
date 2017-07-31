@@ -11,25 +11,33 @@ namespace LD39 {
 		public delegate void Action(InputAction action);
 		public static event Action OnAction;
 
-		// Update is called once per frame
+		Repeater horizontalRepeater = new Repeater("Horizontal");
+		Repeater verticalRepeater = new Repeater("Vertical");
+
 		void Update () {
-			if (Input.GetKeyDown("up") && OnMove != null) {
+			int x = horizontalRepeater.Update();
+			int y = verticalRepeater.Update();
+
+			if (y > 0 && OnMove != null) {
 				OnMove(Direction.Up);
 			}
-			else if (Input.GetKeyDown("right") && OnMove != null) {
+			else if (x > 0 && OnMove != null) {
 				OnMove(Direction.Right);
 			}
-			else if (Input.GetKeyDown("down") && OnMove != null) {
+			else if (y < 0 && OnMove != null) {
 				OnMove(Direction.Down);
 			}
-			else if (Input.GetKeyDown("left") && OnMove != null) {
+			else if (x < 0 && OnMove != null) {
 				OnMove(Direction.Left);
 			}
-			else if (Input.GetButtonDown("Fire1") && OnAction != null) {
-				OnAction(InputAction.Fire1);
+			else if (Input.GetButtonDown("Submit") && OnAction != null) {
+				OnAction(InputAction.Submit);
 			}
-			else if (Input.GetButtonDown("Fire2") && OnAction != null) {
-				OnAction(InputAction.Fire2);
+			else if (Input.GetButtonDown("Cancel") && OnAction != null) {
+				OnAction(InputAction.Cancel);
+			}
+			else if (Input.GetButtonDown("Start") && OnAction != null) {
+				OnAction(InputAction.Start);
 			}
 		}
 	}

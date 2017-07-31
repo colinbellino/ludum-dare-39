@@ -24,7 +24,7 @@ namespace LD39 {
 			{ "r", "Rock" },
 		};
 
-		void Start () {
+		void Awake () {
 			CheckBlueprintValidity();
 
 			if (blueprintIsValid) {
@@ -34,7 +34,7 @@ namespace LD39 {
 
 		void Update () {
 			if (blueprintIsValid) {
-				UpdateGrid();
+				RenderGrid();
 			}
 		}
 
@@ -70,6 +70,10 @@ namespace LD39 {
 		void GenerateGrid() {
 			grid = new MultiDimensionalCell[blueprint.Length];
 
+			// Generate container
+			GameObject root = new GameObject();
+			root.name = "GridContainer";
+
 			for (int x = 0; x < blueprint.Length; x++) {
 				grid[x] = new MultiDimensionalCell{
 					rows = new Cell[blueprint[0].rows.Length]
@@ -81,7 +85,7 @@ namespace LD39 {
 						y = y,
 					};
 					grid[x].rows[y] = cell;
-					InstanciateCell(cell, blueprint[x].rows[y]);
+					InstanciateCell(cell, blueprint[x].rows[y], root);
 				}
 			}
 
@@ -90,7 +94,7 @@ namespace LD39 {
 			}
 		}
 
-		void UpdateGrid() {
+		void RenderGrid() {
 			if (grid.Length == 0) { return; }
 
 			foreach (var column in grid) {
@@ -100,10 +104,11 @@ namespace LD39 {
 			}
 		}
 
-		void InstanciateCell(Cell cell, string contentKey) {
+		void InstanciateCell(Cell cell, string contentKey, GameObject parent) {
 			// Generate root
 			Vector3 pos = new Vector3(cell.x, 0f, cell.y);
 			GameObject root = Instantiate(cellObject, pos, Quaternion.identity);
+			root.transform.SetParent(parent.transform);
 			root.name = "Cell (" + cell.x + "-" + cell.y + ")";
 
 			// Generate overlay
@@ -129,6 +134,17 @@ namespace LD39 {
 		}
 
 		void RenderCellContent(Cell cell) {
+			// If the cell has no content
+			if (!cell.content) {
+				if (!cell.lastContent) { return; }
+
+				// If we have no content to destroy, stop here
+				Transform existingContent = cell.root.transform.Find(cell.lastContent.name);
+				if (!existingContent) { return; }
+
+				Destroy(existingContent.gameObject);
+			}
+
 			// If the cell has content
 			if (cell.content) {
 				Transform existingContent = cell.root.transform.Find(cell.content.name);
@@ -144,16 +160,6 @@ namespace LD39 {
 				if (cell.lastContent && cell.lastContent.name != cell.content.name) {
 					Destroy(cell.lastContent.gameObject);
 				}
-			}
-			// If the cell has no content
-			else {
-				if (!cell.lastContent) { return; }
-
-				// If we have no content to destroy, stop here
-				Transform existingContent = cell.root.transform.Find(cell.lastContent.name);
-				if (!existingContent) { return; }
-
-				Destroy(existingContent.gameObject);
 			}
 		}
 
@@ -223,23 +229,23 @@ namespace LD39 {
 
 			switch (direction) {
 				case Direction.Up:
-					if (cell.y < grid.Length - 1) {
-						return grid[cell.x].rows[cell.y + 1];
-					}
-					break;
-				case Direction.Right:
 					if (cell.x < grid[0].rows.Length - 1) {
 						return grid[cell.x + 1].rows[cell.y];
 					}
 					break;
-				case Direction.Down:
+				case Direction.Right:
 					if (cell.y > 0) {
 						return grid[cell.x].rows[cell.y - 1];
 					}
 					break;
-				case Direction.Left:
+				case Direction.Down:
 					if (cell.x > 0) {
 						return grid[cell.x - 1].rows[cell.y];
+					}
+					break;
+				case Direction.Left:
+					if (cell.y < grid.Length - 1) {
+						return grid[cell.x].rows[cell.y + 1];
 					}
 					break;
 			}

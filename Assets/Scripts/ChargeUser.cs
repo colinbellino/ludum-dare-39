@@ -5,9 +5,7 @@ using UnityEngine;
 namespace LD39 {
 	public class ChargeUser : MonoBehaviour {
 
-		[SerializeField]
-		[HideInInspector]
-		int charges = 5;
+		[SerializeField] [HideInInspector] int charges;
 
 		public delegate void UpdateCharge(int numberOfCharge);
 		public static event UpdateCharge OnUpdateCharge;
@@ -15,7 +13,7 @@ namespace LD39 {
 		public delegate void ChargeDepleted(GameObject source);
 		public static event ChargeDepleted OnChargeDepleted;
 
-		void Start() {
+		void Awake() {
 			if (OnUpdateCharge != null) {
 				OnUpdateCharge(charges);
 			}
@@ -47,6 +45,11 @@ namespace LD39 {
 
 		public int SetCharges(int charges) {
 			this.charges = charges;
+
+			if (OnUpdateCharge != null) {
+				OnUpdateCharge(charges);
+			}
+
 			return this.charges;
 		}
 

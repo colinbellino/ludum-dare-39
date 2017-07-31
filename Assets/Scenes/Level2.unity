@@ -109,84 +109,12 @@ NavMeshSettings:
     tileSize: 256
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &1271213870
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.size
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.data[0].rows.Array.size
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.data[0].rows.Array.data[1]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: chargeForGrid
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: charges
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
-        type: 2}
-      propertyPath: blueprint.Array.data[0].rows.Array.data[4]
-      value: 
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 852e0e0a574b348bcb7d99813563a02a, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &1504414791
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 1098160376424330, guid: 852e0e0a574b348bcb7d99813563a02a,
     type: 2}
-  m_PrefabInternal: {fileID: 1271213870}
+  m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1504414793}
@@ -203,7 +131,7 @@ MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 114942417924007826, guid: 852e0e0a574b348bcb7d99813563a02a,
     type: 2}
-  m_PrefabInternal: {fileID: 1271213870}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1504414791}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -331,7 +259,7 @@ Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 4214066873134134, guid: 852e0e0a574b348bcb7d99813563a02a,
     type: 2}
-  m_PrefabInternal: {fileID: 1271213870}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1504414791}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}

@@ -7,13 +7,23 @@ using UnityEngine.SceneManagement;
 namespace LD39 {
 	public class Exit : MonoBehaviour, TriggerOnMove {
 
+		GameManager gameManager;
+
+		void Awake() {
+			gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+			if (gameManager == null) {
+				throw new UnityException("Could not find GameManager");
+			}
+		}
+
 		public void Trigger(GameObject actor) {
 			Player player = actor.GetComponent<Player>();
 
 			if (player) {
-				Debug.LogWarning("VICTORY");
-				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-			} 
+				if (gameManager) {
+					gameManager.LoadNextLevel();
+				}
+			}
 		}
 
 	}

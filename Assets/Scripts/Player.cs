@@ -6,25 +6,34 @@ using UnityEngine.SceneManagement;
 
 namespace LD39 {
 	public class Player : MonoBehaviour {
+
+		GameManager gameManager;
+
 		void Awake() {
-			ChargeUser.OnChargeDepleted += OnChargeDepleted;
+			gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+			if (gameManager == null) {
+				throw new UnityException("Could not find GameManager");
+			}
+
 			GridManager.OnGridGenerated += OnGridGenerated;
+			ChargeUser.OnChargeDepleted += OnChargeDepleted;
 		}
 
-		void OnDisable() {
-			ChargeUser.OnChargeDepleted -= OnChargeDepleted;
+		void OnDestroy() {
 			GridManager.OnGridGenerated -= OnGridGenerated;
-		}
-
-		void OnChargeDepleted(GameObject source) {
-			Debug.LogError("DEFEAT");
-			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+			ChargeUser.OnChargeDepleted -= OnChargeDepleted;
 		}
 
 		void OnGridGenerated(int numberOfCharges) {
 			var chargeUser = GetComponent<ChargeUser>();
 			if (chargeUser != null) {
 				chargeUser.SetCharges(numberOfCharges);
+			}
+		}
+
+		void OnChargeDepleted(GameObject source) {
+			if (gameManager != null) {
+				gameManager.GameOver();
 			}
 		}
 	}

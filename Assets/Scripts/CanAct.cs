@@ -5,16 +5,16 @@ using UnityEngine;
 namespace LD39 {
 	public class CanAct : MonoBehaviour {
 
-		void OnEnable() {
+		void Awake() {
 			InputManager.OnAction += Action;
 		}
 
-		void OnDisable() {
+		void OnDestroy() {
 			InputManager.OnAction -= Action;
 		}
 
 		void Action(InputAction action) {
-			Debug.Log("Action: " + action);
+
 		}
 	}
 }

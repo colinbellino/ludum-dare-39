@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace LD39 {
 	public enum InputAction {
-		Fire1, 
-        Fire2
+		Submit,
+		Cancel,
+		Start
 	}
 }
