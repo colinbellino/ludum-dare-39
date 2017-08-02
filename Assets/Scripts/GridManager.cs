@@ -9,13 +9,11 @@ namespace LD39 {
 		public delegate void GridGenerated(int charges);
 		public static event GridGenerated OnGridGenerated;
 
-		public MultiDimensionalString[] blueprint;
-		public MultiDimensionalCell[] grid;
+		[HideInInspector] public MultiDimensionalCell[] grid;
 
-		bool blueprintIsValid = false;
-		[SerializeField] int charges;
 		[SerializeField] GameObject cellObject;
 		[SerializeField] GameObject cellOverlay;
+		[SerializeField] [HideInInspector] GameObject gridContainer;
 
 		Dictionary<string, string> contentDictionary = new Dictionary<string, string> {
 			{ "p", "Player" },
@@ -24,98 +22,107 @@ namespace LD39 {
 			{ "r", "Rock" },
 		};
 
-		void Awake () {
-			CheckBlueprintValidity();
+		void OnEnable() {
+			CreateGridContainer();
+		}
 
-			if (blueprintIsValid) {
-				GenerateGrid();
-			}
+		void OnDisable() {
+			DestroyGridContainer();
 		}
 
 		void Update () {
-			if (blueprintIsValid) {
-				RenderGrid();
-			}
+			RenderGrid();
 		}
 
-		void CheckBlueprintValidity() {
-			bool hasPlayer = false;
-			bool hasExit = false;
+		public void GenerateGrid(Level level) {
+			grid = new MultiDimensionalCell[level.rows.Length];
 
-			if (charges <= 0) {
-				throw new UnityException("Invalid number of charges!");
-			}
-
-			for (int x = 0; x < blueprint.Length; x++) {
-				for (int y = 0; y < blueprint[0].rows.Length; y++) {
-					if (blueprint[x].rows[y] == "p") {
-						hasPlayer = true;
-					}
-					if (blueprint[x].rows[y] == "e") {
-						hasExit = true;
-					}
-				}
-			}
-
-			if (!hasPlayer) {
-				throw new UnityException("The blueprint has no PLAYER spawn point!");
-			}
-			if (!hasExit) {
-				throw new UnityException("The blueprint has no EXIT!");
-			}
-
-			blueprintIsValid = true;
-		}
-
-		void GenerateGrid() {
-			grid = new MultiDimensionalCell[blueprint.Length];
-
-			// Generate container
-			GameObject root = new GameObject();
-			root.name = "GridContainer";
-
-			for (int x = 0; x < blueprint.Length; x++) {
+			for (int x = 0; x < level.rows.Length; x++) {
 				grid[x] = new MultiDimensionalCell{
-					rows = new Cell[blueprint[0].rows.Length]
+					columns = new Cell[level.rows[0].columns.Length]
 				};
 
-				for (int y = 0; y < blueprint[0].rows.Length; y++) {
+				for (int y = 0; y < level.rows[0].columns.Length; y++) {
 					Cell cell = new Cell {
 						x = x,
 						y = y,
 					};
-					grid[x].rows[y] = cell;
-					InstanciateCell(cell, blueprint[x].rows[y], root);
+					grid[x].columns[y] = cell;
+					InstanciateCell(cell, level.rows[x].columns[y]);
 				}
 			}
 
 			if (OnGridGenerated != null) {
-				OnGridGenerated(charges);
+				OnGridGenerated(level.charges);
 			}
 		}
 
-		void RenderGrid() {
-			if (grid.Length == 0) { return; }
+		public void DestroyGrid() {
+			grid = null;
 
-			foreach (var column in grid) {
-				foreach (var cell in column.rows) {
+			foreach (Transform child in gridContainer.transform) {
+				GameObject.Destroy(child.gameObject);
+			}
+		}
+
+		public bool MoveInDirection(GameObject content, Direction direction) {
+			bool wasAbleToMove = false;
+			var startCell = GetCellByContent(content);
+			var endCell = GetCellByDirection(startCell, direction);
+
+			if (!CanMoveThere(endCell)) { return false; }
+
+			if (endCell.content) {
+				var triggerOnMove = endCell.content.GetComponent<TriggerOnMove>();
+				if (triggerOnMove != null) {
+					triggerOnMove.Trigger(startCell.content);
+					wasAbleToMove = true;
+				}
+			} else {
+				wasAbleToMove = true;
+			}
+
+			// TODO: Move the content instead of destroying / creating it
+			SetCellContent(startCell, null);
+			SetCellContent(endCell, content);
+
+			return wasAbleToMove;
+		}
+
+		void CreateGridContainer() {
+			GameObject root = new GameObject();
+			root.name = "GridContainer";
+
+			gridContainer = root;
+		}
+
+		void DestroyGridContainer() {
+			Destroy(gridContainer);
+			gridContainer = null;
+		}
+
+		void RenderGrid() {
+			if (grid.Length == 0 || grid[0].columns.Length == 0) { return; }
+
+			foreach (var rows in grid) {
+				foreach (var cell in rows.columns) {
 					RenderCellContent(cell);
 				}
 			}
 		}
 
-		void InstanciateCell(Cell cell, string contentKey, GameObject parent) {
+		void InstanciateCell(Cell cell, string contentKey) {
 			// Generate root
 			Vector3 pos = new Vector3(cell.x, 0f, cell.y);
 			GameObject root = Instantiate(cellObject, pos, Quaternion.identity);
-			root.transform.SetParent(parent.transform);
+			root.transform.SetParent(gridContainer.transform);
 			root.name = "Cell (" + cell.x + "-" + cell.y + ")";
 
 			// Generate overlay
 			GameObject overlay = Instantiate(cellOverlay, root.transform);
 
 			// Generate content
-			if (contentKey != "") {
+			if (contentKey != " ") {
 				string resourceName;
 				contentDictionary.TryGetValue(contentKey, out resourceName);
 
@@ -163,30 +170,6 @@ namespace LD39 {
 			}
 		}
 
-		public bool MoveInDirection(GameObject content, Direction direction) {
-			bool wasAbleToMove = false;
-			var startCell = GetCellByContent(content);
-			var endCell = GetCellByDirection(startCell, direction);
-
-			if (!CanMoveThere(endCell)) { return false; }
-
-			if (endCell.content) {
-				var triggerOnMove = endCell.content.GetComponent<TriggerOnMove>();
-				if (triggerOnMove != null) {
-					triggerOnMove.Trigger(startCell.content);
-					wasAbleToMove = true;
-				}
-			} else {
-				wasAbleToMove = true;
-			}
-
-			// TODO: Move the content instead of destroying / creating it
-			SetCellContent(startCell, null);
-			SetCellContent(endCell, content);
-
-			return wasAbleToMove;
-		}
-
 		Cell SetCellContent(Cell cell, GameObject content) {
 			cell.lastContent = cell.content;
 			cell.content = content;
@@ -195,7 +178,7 @@ namespace LD39 {
 
 		Cell GetCellByContent(GameObject content) {
 			foreach (var column in grid) {
-				foreach (var cell in column.rows) {
+				foreach (var cell in column.columns) {
 					if (cell.content == content) {
 						return cell;
 					}
@@ -229,23 +212,23 @@ namespace LD39 {
 
 			switch (direction) {
 				case Direction.Up:
-					if (cell.x < grid[0].rows.Length - 1) {
-						return grid[cell.x + 1].rows[cell.y];
+					if (cell.x < grid[0].columns.Length - 1) {
+						return grid[cell.x + 1].columns[cell.y];
 					}
 					break;
 				case Direction.Right:
 					if (cell.y > 0) {
-						return grid[cell.x].rows[cell.y - 1];
+						return grid[cell.x].columns[cell.y - 1];
 					}
 					break;
 				case Direction.Down:
 					if (cell.x > 0) {
-						return grid[cell.x - 1].rows[cell.y];
+						return grid[cell.x - 1].columns[cell.y];
 					}
 					break;
 				case Direction.Left:
 					if (cell.y < grid.Length - 1) {
-						return grid[cell.x].rows[cell.y + 1];
+						return grid[cell.x].columns[cell.y + 1];
 					}
 					break;
 			}
@@ -264,12 +247,7 @@ namespace LD39 {
 	}
 
 	[System.Serializable]
-	public class MultiDimensionalString {
-		public string[] rows;
-	}
-
-	[System.Serializable]
 	public class MultiDimensionalCell {
-		public Cell[] rows;
+		public Cell[] columns;
 	}
 }

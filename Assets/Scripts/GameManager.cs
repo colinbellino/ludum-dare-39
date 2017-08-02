@@ -4,7 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace LD39 {
-	public class GameManager : MonoBehaviour {
+	public class GameManager : Singleton<GameManager> {
+
+		public delegate void GameStart();
+		public static event GameStart OnGameStart;
 
 		public delegate void GameWin();
 		public static event GameWin OnGameWin;
@@ -12,71 +15,39 @@ namespace LD39 {
 		public delegate void GameLose();
 		public static event GameLose OnGameLose;
 
-		public static GameManager instance;
-		[SerializeField] List<string> levelNames;
-		bool isLoadingLevel = false;
-
-		void Awake () {
-			DontDestroyOnLoad(this);
-			if(!instance) {
-				instance = this;
-			} else {
-				Destroy(gameObject);
-			}
-			DontDestroyOnLoad(gameObject);
-
-			SceneManager.sceneLoaded += OnLevelFinishedLoading;
-		}
-
-		void OnDestroy() {
-			SceneManager.sceneLoaded -= OnLevelFinishedLoading;
-		}
-
-		void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode) {
-			isLoadingLevel = false;
-		}
+		[SerializeField] LevelManager levelManager;
 
 		public void LoadFirstLevel() {
-			SceneManager.LoadScene(levelNames[0]);
+			levelManager.NextLevel();
+
+			if (OnGameStart != null) {
+				OnGameStart();
+			}
 		}
 
 		public void LoadNextLevel() {
-			Scene activeScene = SceneManager.GetActiveScene();
-			int activeIndex = levelNames.FindIndex(
-				(levelName) => levelName == activeScene.name
-			);
-			int nextIndex = activeIndex + 1;
-
-			if (nextIndex < levelNames.Count) {
-				LoadLevel(levelNames[nextIndex]);
-			} else {
-				if (OnGameWin != null) {
-					OnGameWin();
-					isLoadingLevel = true; // Dirty hack
-				}
-			}
+			levelManager.NextLevel();
 		}
 
 		public void LoadLevel(string levelName) {
-			if (isLoadingLevel) {
-				Debug.LogWarning("Tried to load a level when one was already loading");
-				return;
-			}
-			isLoadingLevel = true;
-			SceneManager.LoadScene(levelName);
+			levelManager.ChangeLevel(levelName);
 		}
 
 		public void ExitGame() {
 			#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 			#endif
+
 			Application.Quit();
 		}
 
+		// TODO: do something
 		public void GameOver() {
-			LoadLevel(SceneManager.GetActiveScene().name);
+			Debug.Log("GameOver");
+			// LoadLevel(SceneManager.GetActiveScene().name);
 		}
 
+		// TODO: delete me
 		public bool IsTitleScreen() {
 			return SceneManager.GetActiveScene().name == "TitleScreen";
 		}
