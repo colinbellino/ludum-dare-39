@@ -9,7 +9,7 @@ namespace LD39 {
 
 		GameManager gameManager;
 
-		void Awake() {
+		void OnEnable() {
 			gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 			if (gameManager == null) {
 				throw new UnityException("Could not find GameManager");
@@ -19,7 +19,7 @@ namespace LD39 {
 			ChargeUser.OnChargeDepleted += OnChargeDepleted;
 		}
 
-		void OnDestroy() {
+		void OnDisable() {
 			GridManager.OnGridGenerated -= OnGridGenerated;
 			ChargeUser.OnChargeDepleted -= OnChargeDepleted;
 		}

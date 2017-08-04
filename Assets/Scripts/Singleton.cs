@@ -7,7 +7,7 @@ namespace LD39 {
 		public static Instance instance;
 		public bool isPersistant;
 
-		public virtual void Awake() {
+		public virtual void OnEnable() {
 			if(isPersistant) {
 				if(!instance) {
 					instance = this as Instance;

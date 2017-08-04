@@ -20,7 +20,7 @@ namespace LD39.UI {
 		GameManager gameManager;
 		bool isVisible = false;
 
-		void Awake() {
+		void OnEnable() {
 			gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 			if (gameManager == null) {
 				throw new UnityException("Could not find GameManager");
@@ -29,7 +29,7 @@ namespace LD39.UI {
 			InputManager.OnAction += OnAction;
 		}
 
-		void OnDestroy() {
+		void OnDisable() {
 			InputManager.OnAction -= OnAction;
 		}
 

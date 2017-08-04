@@ -13,7 +13,7 @@ namespace LD39 {
 		public delegate void ChargeDepleted(GameObject source);
 		public static event ChargeDepleted OnChargeDepleted;
 
-		void Awake() {
+		void OnEnable() {
 			if (OnUpdateCharge != null) {
 				OnUpdateCharge(charges);
 			}

@@ -9,13 +9,13 @@ namespace LD39 {
 		GridManager gridManager;
 		ChargeUser chargeUser;
 
-		void Awake() {
+		void OnEnable() {
 			Init();
 
 			InputManager.OnMove += OnMove;
 		}
 
-		void OnDestroy() {
+		void OnDisable() {
 			InputManager.OnMove -= OnMove;
 		}
 

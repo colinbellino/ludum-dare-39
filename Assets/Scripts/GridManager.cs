@@ -31,7 +31,7 @@ namespace LD39 {
 		}
 
 		void Update () {
-			RenderGrid();
+			UpdateGrid();
 		}
 
 		public void GenerateGrid(Level level) {
@@ -101,12 +101,12 @@ namespace LD39 {
 			gridContainer = null;
 		}
 
-		void RenderGrid() {
+		void UpdateGrid() {
 			if (grid.Length == 0 || grid[0].columns.Length == 0) { return; }
 
 			foreach (var rows in grid) {
 				foreach (var cell in rows.columns) {
-					RenderCellContent(cell);
+					UpdateCellContent(cell);
 				}
 			}
 		}
@@ -140,32 +140,25 @@ namespace LD39 {
 			cell.overlay = overlay;
 		}
 
-		void RenderCellContent(Cell cell) {
-			// If the cell has no content
-			if (!cell.content) {
-				if (!cell.lastContent) { return; }
-
-				// If we have no content to destroy, stop here
-				Transform existingContent = cell.root.transform.Find(cell.lastContent.name);
-				if (!existingContent) { return; }
-
-				Destroy(existingContent.gameObject);
-			}
-
-			// If the cell has content
+		void UpdateCellContent(Cell cell) {
 			if (cell.content) {
-				Transform existingContent = cell.root.transform.Find(cell.content.name);
-				// If we already created the content, stop here
-				if (!existingContent) {
-					// Instanciate the content object
-					GameObject newContent = Instantiate(cell.content, cell.root.transform);
-					newContent.name = cell.content.name;
-					cell.content = newContent;
+				// Re-parent and move the content game object
+				Transform contentLocal = cell.root.transform.Find(cell.content.name);
+				if (!contentLocal && cell.content != cell.lastContent) {
+					cell.content.transform.SetParent(cell.root.transform);
+					cell.content.transform.position = new Vector3(
+						cell.root.transform.position.x,
+						cell.content.transform.position.y,
+						cell.root.transform.position.z
+					);
 				}
 
-				// Destroy the content form the last frame
-				if (cell.lastContent && cell.lastContent.name != cell.content.name) {
-					Destroy(cell.lastContent.gameObject);
+				// Cleanup the last content remaining game object
+				if (cell.lastContent) {
+					Transform lastContentLocal = cell.root.transform.Find(cell.lastContent.name);
+					if (lastContentLocal) {
+						Destroy(lastContentLocal.gameObject);
+					}
 				}
 			}
 		}
