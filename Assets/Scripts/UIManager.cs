@@ -13,26 +13,20 @@ namespace LD39 {
 		[SerializeField] UI.LevelSelect levelSelectUI;
 		[SerializeField] UI.EndScreen endScreenUI;
 
-		void OnEnable() {
+		void Awake() {
 			ChargeUser.OnUpdateCharge += UpdateCharge;
 			SceneManager.sceneLoaded += OnLevelFinishedLoading;
 			GameManager.OnGameWin += OnGameWin;
-			GameManager.OnGameStart += OnGameStart;
 		}
 
-		void OnDisable() {
+		void OnDestroy() {
 			ChargeUser.OnUpdateCharge -= UpdateCharge;
 			SceneManager.sceneLoaded -= OnLevelFinishedLoading;
 			GameManager.OnGameWin -= OnGameWin;
-			GameManager.OnGameStart -= OnGameStart;
 		}
 
 		void OnGameWin() {
 			ShowEndScreen();
-		}
-
-		void OnGameStart() {
-			HideTitleScreen();
 		}
 
 		void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode) {
@@ -57,13 +51,6 @@ namespace LD39 {
 			titleScreenUI.Show();
 			levelSelectUI.Hide();
 			chargeUI.Hide();
-			endScreenUI.Hide();
-		}
-
-		public void HideTitleScreen() {
-			titleScreenUI.Hide();
-			levelSelectUI.Hide();
-			chargeUI.Show();
 			endScreenUI.Hide();
 		}
 

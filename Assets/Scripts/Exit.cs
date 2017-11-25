@@ -9,7 +9,7 @@ namespace LD39 {
 
 		GameManager gameManager;
 
-		void OnEnable() {
+		void Awake() {
 			gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 			if (gameManager == null) {
 				throw new UnityException("Could not find GameManager");

@@ -9,11 +9,13 @@ namespace LD39 {
 		public delegate void GridGenerated(int charges);
 		public static event GridGenerated OnGridGenerated;
 
-		[HideInInspector] public MultiDimensionalCell[] grid;
+		public MultiDimensionalString[] blueprint;
+		public MultiDimensionalCell[] grid;
 
+		bool blueprintIsValid = false;
+		[SerializeField] int charges;
 		[SerializeField] GameObject cellObject;
 		[SerializeField] GameObject cellOverlay;
-		[SerializeField] [HideInInspector] GameObject gridContainer;
 
 		Dictionary<string, string> contentDictionary = new Dictionary<string, string> {
 			{ "p", "Player" },
@@ -22,46 +24,142 @@ namespace LD39 {
 			{ "r", "Rock" },
 		};
 
-		void OnEnable() {
-			CreateGridContainer();
-		}
+		void Awake () {
+			CheckBlueprintValidity();
 
-		void OnDisable() {
-			DestroyGridContainer();
+			if (blueprintIsValid) {
+				GenerateGrid();
+			}
 		}
 
 		void Update () {
-			UpdateGrid();
+			if (blueprintIsValid) {
+				RenderGrid();
+			}
 		}
 
-		public void GenerateGrid(Level level) {
-			grid = new MultiDimensionalCell[level.rows.Length];
+		void CheckBlueprintValidity() {
+			bool hasPlayer = false;
+			bool hasExit = false;
 
-			for (int x = 0; x < level.rows.Length; x++) {
+			if (charges <= 0) {
+				throw new UnityException("Invalid number of charges!");
+			}
+
+			for (int x = 0; x < blueprint.Length; x++) {
+				for (int y = 0; y < blueprint[0].rows.Length; y++) {
+					if (blueprint[x].rows[y] == "p") {
+						hasPlayer = true;
+					}
+					if (blueprint[x].rows[y] == "e") {
+						hasExit = true;
+					}
+				}
+			}
+
+			if (!hasPlayer) {
+				throw new UnityException("The blueprint has no PLAYER spawn point!");
+			}
+			if (!hasExit) {
+				throw new UnityException("The blueprint has no EXIT!");
+			}
+
+			blueprintIsValid = true;
+		}
+
+		void GenerateGrid() {
+			grid = new MultiDimensionalCell[blueprint.Length];
+
+			// Generate container
+			GameObject root = new GameObject();
+			root.name = "GridContainer";
+
+			for (int x = 0; x < blueprint.Length; x++) {
 				grid[x] = new MultiDimensionalCell{
-					columns = new Cell[level.rows[0].columns.Length]
+					rows = new Cell[blueprint[0].rows.Length]
 				};
 
-				for (int y = 0; y < level.rows[0].columns.Length; y++) {
+				for (int y = 0; y < blueprint[0].rows.Length; y++) {
 					Cell cell = new Cell {
 						x = x,
 						y = y,
 					};
-					grid[x].columns[y] = cell;
-					InstanciateCell(cell, level.rows[x].columns[y]);
+					grid[x].rows[y] = cell;
+					InstanciateCell(cell, blueprint[x].rows[y], root);
 				}
 			}
 
 			if (OnGridGenerated != null) {
-				OnGridGenerated(level.charges);
+				OnGridGenerated(charges);
 			}
 		}
 
-		public void DestroyGrid() {
-			grid = null;
+		void RenderGrid() {
+			if (grid.Length == 0) { return; }
 
-			foreach (Transform child in gridContainer.transform) {
-				GameObject.Destroy(child.gameObject);
+			foreach (var column in grid) {
+				foreach (var cell in column.rows) {
+					RenderCellContent(cell);
+				}
+			}
+		}
+
+		void InstanciateCell(Cell cell, string contentKey, GameObject parent) {
+			// Generate root
+			Vector3 pos = new Vector3(cell.x, 0f, cell.y);
+			GameObject root = Instantiate(cellObject, pos, Quaternion.identity);
+			root.transform.SetParent(parent.transform);
+			root.name = "Cell (" + cell.x + "-" + cell.y + ")";
+
+			// Generate overlay
+			GameObject overlay = Instantiate(cellOverlay, root.transform);
+
+			// Generate content
+			if (contentKey != "") {
+				string resourceName;
+				contentDictionary.TryGetValue(contentKey, out resourceName);
+
+				var res = Resources.Load(resourceName, typeof(GameObject));
+				if (!res) {
+					throw new UnityException("Could not load resource: " + resourceName);
+				}
+
+				GameObject content = Instantiate(res, root.transform) as GameObject;
+				cell.content = content;
+			}
+
+			// Update the cell ref
+			cell.root = root;
+			cell.overlay = overlay;
+		}
+
+		void RenderCellContent(Cell cell) {
+			// If the cell has no content
+			if (!cell.content) {
+				if (!cell.lastContent) { return; }
+
+				// If we have no content to destroy, stop here
+				Transform existingContent = cell.root.transform.Find(cell.lastContent.name);
+				if (!existingContent) { return; }
+
+				Destroy(existingContent.gameObject);
+			}
+
+			// If the cell has content
+			if (cell.content) {
+				Transform existingContent = cell.root.transform.Find(cell.content.name);
+				// If we already created the content, stop here
+				if (!existingContent) {
+					// Instanciate the content object
+					GameObject newContent = Instantiate(cell.content, cell.root.transform);
+					newContent.name = cell.content.name;
+					cell.content = newContent;
+				}
+
+				// Destroy the content form the last frame
+				if (cell.lastContent && cell.lastContent.name != cell.content.name) {
+					Destroy(cell.lastContent.gameObject);
+				}
 			}
 		}
 
@@ -89,80 +187,6 @@ namespace LD39 {
 			return wasAbleToMove;
 		}
 
-		void CreateGridContainer() {
-			GameObject root = new GameObject();
-			root.name = "GridContainer";
-
-			gridContainer = root;
-		}
-
-		void DestroyGridContainer() {
-			Destroy(gridContainer);
-			gridContainer = null;
-		}
-
-		void UpdateGrid() {
-			if (grid.Length == 0 || grid[0].columns.Length == 0) { return; }
-
-			foreach (var rows in grid) {
-				foreach (var cell in rows.columns) {
-					UpdateCellContent(cell);
-				}
-			}
-		}
-
-		void InstanciateCell(Cell cell, string contentKey) {
-			// Generate root
-			Vector3 pos = new Vector3(cell.x, 0f, cell.y);
-			GameObject root = Instantiate(cellObject, pos, Quaternion.identity);
-			root.transform.SetParent(gridContainer.transform);
-			root.name = "Cell (" + cell.x + "-" + cell.y + ")";
-
-			// Generate overlay
-			GameObject overlay = Instantiate(cellOverlay, root.transform);
-
-			// Generate content
-			if (contentKey != " ") {
-				string resourceName;
-				contentDictionary.TryGetValue(contentKey, out resourceName);
-
-				var res = Resources.Load(resourceName, typeof(GameObject));
-				if (!res) {
-					throw new UnityException("Could not load resource: " + resourceName);
-				}
-
-				GameObject content = Instantiate(res, root.transform) as GameObject;
-				cell.content = content;
-			}
-
-			// Update the cell ref
-			cell.root = root;
-			cell.overlay = overlay;
-		}
-
-		void UpdateCellContent(Cell cell) {
-			if (cell.content) {
-				// Re-parent and move the content game object
-				Transform contentLocal = cell.root.transform.Find(cell.content.name);
-				if (!contentLocal && cell.content != cell.lastContent) {
-					cell.content.transform.SetParent(cell.root.transform);
-					cell.content.transform.position = new Vector3(
-						cell.root.transform.position.x,
-						cell.content.transform.position.y,
-						cell.root.transform.position.z
-					);
-				}
-
-				// Cleanup the last content remaining game object
-				if (cell.lastContent) {
-					Transform lastContentLocal = cell.root.transform.Find(cell.lastContent.name);
-					if (lastContentLocal) {
-						Destroy(lastContentLocal.gameObject);
-					}
-				}
-			}
-		}
-
 		Cell SetCellContent(Cell cell, GameObject content) {
 			cell.lastContent = cell.content;
 			cell.content = content;
@@ -171,7 +195,7 @@ namespace LD39 {
 
 		Cell GetCellByContent(GameObject content) {
 			foreach (var column in grid) {
-				foreach (var cell in column.columns) {
+				foreach (var cell in column.rows) {
 					if (cell.content == content) {
 						return cell;
 					}
@@ -205,23 +229,23 @@ namespace LD39 {
 
 			switch (direction) {
 				case Direction.Up:
-					if (cell.x < grid[0].columns.Length - 1) {
-						return grid[cell.x + 1].columns[cell.y];
+					if (cell.x < grid[0].rows.Length - 1) {
+						return grid[cell.x + 1].rows[cell.y];
 					}
 					break;
 				case Direction.Right:
 					if (cell.y > 0) {
-						return grid[cell.x].columns[cell.y - 1];
+						return grid[cell.x].rows[cell.y - 1];
 					}
 					break;
 				case Direction.Down:
 					if (cell.x > 0) {
-						return grid[cell.x - 1].columns[cell.y];
+						return grid[cell.x - 1].rows[cell.y];
 					}
 					break;
 				case Direction.Left:
 					if (cell.y < grid.Length - 1) {
-						return grid[cell.x].columns[cell.y + 1];
+						return grid[cell.x].rows[cell.y + 1];
 					}
 					break;
 			}
@@ -240,7 +264,12 @@ namespace LD39 {
 	}
 
 	[System.Serializable]
+	public class MultiDimensionalString {
+		public string[] rows;
+	}
+
+	[System.Serializable]
 	public class MultiDimensionalCell {
-		public Cell[] columns;
+		public Cell[] rows;
 	}
 }

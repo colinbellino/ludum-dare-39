@@ -12,7 +12,7 @@ namespace LD39.UI {
 		[SerializeField] GameObject wrapper;
 		bool isVisible = true;
 
-		void OnEnable() {
+		void Awake() {
 			gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 			if (gameManager == null) {
 				throw new UnityException("Could not find GameManager");
